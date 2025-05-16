@@ -62,7 +62,6 @@ void TextFinder::on_FindButton_clicked()
             return;
         }
 
-        // For testing remove later
         ui->TotalMatchCount->setText(QString("%1").arg(searchTextCount));
 
         // Select the first match
