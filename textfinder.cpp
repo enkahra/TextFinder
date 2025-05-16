@@ -15,7 +15,6 @@ TextFinder::TextFinder(QWidget *parent)
     ui->setupUi(this);  // Also calls connectSlotsByName(this) internally
 }
 
-
 TextFinder::~TextFinder()
 {
     delete ui;
@@ -33,57 +32,54 @@ void TextFinder::on_FindButton_clicked()
     // If new search term, count matches and reset everything
     if (searchString != lastSearchText) {
         lastSearchText = searchString;
-        searchTextCount = 0;
-        currentMatchIndex = 0;
+        matchList.clear();
 
-        // Move to start and count all matches
-        ui->textEdit->moveCursor(QTextCursor::Start);
-        bool found;
-        while ((found = ui->textEdit->find(searchString, QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively))) {
-            searchTextCount++;
+        // Move to start and collect all matches
+        QTextDocument *doc = ui->textEdit->document();
+        QTextCursor cursor(doc);
+        cursor.movePosition(QTextCursor::Start);
+
+        while (!cursor.isNull() && !cursor.atEnd()) {
+            cursor = doc->find(searchString, cursor, QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively);
+            if (!cursor.isNull()) {
+                matchList.append(cursor);
+            }
         }
 
+        searchTextCount = matchList.size();
+
         if (searchTextCount == 0) {
+            currentMatchIndex = 0;
             ui->matchInfoLabel->setText("No matches found");
             QMessageBox::information(this, "Not found", "No matches found for: " + searchString);
             return;
         }
 
-        // Move cursor back to top and select the first match
-        ui->textEdit->moveCursor(QTextCursor::Start);
-        bool firstFound = ui->textEdit->find(searchString, QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively);
-        if (firstFound) {
-            currentMatchIndex = 1;
-            ui->matchInfoLabel->setText(QString("Match %1 of %2").arg(currentMatchIndex).arg(searchTextCount));
-        }
+        // For testing remove later
+        ui->TotalMatchCount->setText(QString("%1").arg(searchTextCount));
 
-        return; // Done for this button click
-    }
-
-    // Same search term — find next match
-    bool found = ui->textEdit->find(searchString, QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively);
-    if (found) {
-        currentMatchIndex++;
-        if (currentMatchIndex > searchTextCount)
-            currentMatchIndex = 1; // Wrap manually just in case
+        // Select the first match
+        currentMatchIndex = 1;
+        ui->textEdit->setTextCursor(matchList[currentMatchIndex - 1]);
         ui->matchInfoLabel->setText(QString("Match %1 of %2").arg(currentMatchIndex).arg(searchTextCount));
-    } else {
-        // Reached end — wrap to start
-        ui->textEdit->moveCursor(QTextCursor::Start);
-        found = ui->textEdit->find(searchString, QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively);
-        if (found) {
-            currentMatchIndex = 1;
-            ui->matchInfoLabel->setText(QString("Match %1 of %2").arg(currentMatchIndex).arg(searchTextCount));
-        } else {
-            // Something changed, no matches found anymore
-            currentMatchIndex = 0;
-            searchTextCount = 0;
-            ui->matchInfoLabel->setText("No matches found");
-            QMessageBox::information(this, "Not found", "No matches found for: " + searchString);
-        }
+        return;
     }
-}
 
+    // Same search term — go to next match
+    if (searchTextCount == 0 || matchList.isEmpty()) {
+        currentMatchIndex = 0;
+        ui->matchInfoLabel->setText("No matches found");
+        return;
+    }
+
+    currentMatchIndex++;
+    if (currentMatchIndex > searchTextCount) {
+        currentMatchIndex = 1; // wrap to start
+    }
+
+    ui->textEdit->setTextCursor(matchList[currentMatchIndex - 1]);
+    ui->matchInfoLabel->setText(QString("Match %1 of %2").arg(currentMatchIndex).arg(searchTextCount));
+}
 
 
 void TextFinder::on_OpenTextFile_clicked()
@@ -104,11 +100,37 @@ void TextFinder::on_OpenTextFile_clicked()
     QTextCursor cursor = ui->textEdit->textCursor();
     cursor.movePosition(QTextCursor::Start);
     ui->textEdit->setTextCursor(cursor);
+    ui->OpenedTextFileLabel->setText(QString("Opened file path: %1").arg(filePath));
 }
-
 
 void TextFinder::on_lineEdit_returnPressed()
 {
     TextFinder::on_FindButton_clicked();
+}
+
+void TextFinder::goToMatchIndex(int index)
+{
+    if (index < 1 || index > matchList.size()) {
+        QMessageBox::warning(this, "Invalid Index", "Index out of range.");
+        return;
+    }
+
+    currentMatchIndex = index;
+    ui->textEdit->setTextCursor(matchList[currentMatchIndex - 1]);
+    ui->matchInfoLabel->setText(QString("Match %1 of %2").arg(currentMatchIndex).arg(searchTextCount));
+}
+
+
+
+void TextFinder::on_lineEdit_2_returnPressed()
+{
+    bool ok;
+    int index = ui->lineEdit_2->text().toInt(&ok);
+    if (!ok) {
+        QMessageBox::warning(this, "Invalid Input", "Please enter a valid number.");
+        return;
+    }
+
+    goToMatchIndex(index);  // This sets currentMatchIndex internally
 }
 

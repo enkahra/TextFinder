@@ -2,6 +2,7 @@
 #define TEXTFINDER_H
 
 #include <QWidget>
+#include <QTextCursor>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -27,8 +28,13 @@ private slots:
 
     void on_lineEdit_returnPressed();
 
+    void on_lineEdit_2_returnPressed();
+
+    void goToMatchIndex(int index);
+
 private:
     Ui::TextFinder *ui;
+    QList<QTextCursor> matchList;
 
 };
 #endif // TEXTFINDER_H
