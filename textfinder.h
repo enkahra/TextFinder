@@ -25,6 +25,8 @@ private slots:
 
     void on_OpenTextFile_clicked();
 
+    void on_lineEdit_returnPressed();
+
 private:
     Ui::TextFinder *ui;
 

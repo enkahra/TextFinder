@@ -16,9 +16,6 @@ TextFinder::TextFinder(QWidget *parent)
 }
 
 
-//THIS IS ONLY FOR TESTING
-
-
 TextFinder::~TextFinder()
 {
     delete ui;
@@ -107,5 +104,11 @@ void TextFinder::on_OpenTextFile_clicked()
     QTextCursor cursor = ui->textEdit->textCursor();
     cursor.movePosition(QTextCursor::Start);
     ui->textEdit->setTextCursor(cursor);
+}
+
+
+void TextFinder::on_lineEdit_returnPressed()
+{
+    TextFinder::on_FindButton_clicked();
 }
 
