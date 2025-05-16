@@ -13,11 +13,18 @@ TextFinder::TextFinder(QWidget *parent)
     , ui(new Ui::TextFinder)
 {
     ui->setupUi(this);  // Also calls connectSlotsByName(this) internally
+    connect(ui->textEdit->document(), &QTextDocument::contentsChanged, this, &TextFinder::onTextChanged);
+
 }
 
 TextFinder::~TextFinder()
 {
     delete ui;
+}
+
+void TextFinder::indexShowFunc(int currentMatchIndex, int searchTextCount)
+{
+    ui->matchInfoLabel->setText(QString("Match %1 of %2").arg(currentMatchIndex).arg(searchTextCount));
 }
 
 void TextFinder::on_FindButton_clicked()
@@ -61,7 +68,7 @@ void TextFinder::on_FindButton_clicked()
         // Select the first match
         currentMatchIndex = 1;
         ui->textEdit->setTextCursor(matchList[currentMatchIndex - 1]);
-        ui->matchInfoLabel->setText(QString("Match %1 of %2").arg(currentMatchIndex).arg(searchTextCount));
+        indexShowFunc(currentMatchIndex, searchTextCount);
         return;
     }
 
@@ -78,7 +85,7 @@ void TextFinder::on_FindButton_clicked()
     }
 
     ui->textEdit->setTextCursor(matchList[currentMatchIndex - 1]);
-    ui->matchInfoLabel->setText(QString("Match %1 of %2").arg(currentMatchIndex).arg(searchTextCount));
+    indexShowFunc(currentMatchIndex, searchTextCount);
 }
 
 
@@ -117,9 +124,20 @@ void TextFinder::goToMatchIndex(int index)
 
     currentMatchIndex = index;
     ui->textEdit->setTextCursor(matchList[currentMatchIndex - 1]);
-    ui->matchInfoLabel->setText(QString("Match %1 of %2").arg(currentMatchIndex).arg(searchTextCount));
+    indexShowFunc(currentMatchIndex, searchTextCount);
 }
 
+void TextFinder::onTextChanged()
+{
+    // Clear previous search state because content changed
+    matchList.clear();
+    searchTextCount = 0;
+    currentMatchIndex = 0;
+    lastSearchText.clear();
+
+    ui->matchInfoLabel->setText("Search reset due to text change.");
+    ui->TotalMatchCount->clear();
+}
 
 
 void TextFinder::on_lineEdit_2_returnPressed()

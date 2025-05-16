@@ -30,11 +30,15 @@ private slots:
 
     void on_lineEdit_2_returnPressed();
 
-    void goToMatchIndex(int index);
+    void onTextChanged();
 
 private:
     Ui::TextFinder *ui;
     QList<QTextCursor> matchList;
+
+    void goToMatchIndex(int index);
+
+    void indexShowFunc(int currentMatchIndex, int searchTextCount);
 
 };
 #endif // TEXTFINDER_H
