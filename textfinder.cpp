@@ -6,13 +6,13 @@
 #include <QTextDocument>
 #include <QMessageBox>
 #include <QDebug>
+#include <QFileDialog>
 
 TextFinder::TextFinder(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::TextFinder)
 {
     ui->setupUi(this);  // Also calls connectSlotsByName(this) internally
-    loadTextFile();
 }
 
 
@@ -88,9 +88,11 @@ void TextFinder::on_FindButton_clicked()
 }
 
 
-void TextFinder::loadTextFile()
+
+void TextFinder::on_OpenTextFile_clicked()
 {
-    QFile inputFile(":/input.txt");  // Make sure input.txt is in your .qrc file
+    QString filePath = QFileDialog::getOpenFileName(this, "Open Text File", "", "Text Files (*.txt);;All Files (*)");
+    QFile inputFile(filePath);
     if (!inputFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::critical(this, "Error", "Could not open the input file.");
         return;

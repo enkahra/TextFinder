@@ -23,8 +23,10 @@ public:
 private slots:
     void on_FindButton_clicked();
 
+    void on_OpenTextFile_clicked();
+
 private:
     Ui::TextFinder *ui;
-    void loadTextFile();
+
 };
 #endif // TEXTFINDER_H

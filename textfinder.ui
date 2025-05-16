@@ -13,13 +13,13 @@
   <property name="windowTitle">
    <string>TextFinder</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>10</y>
+     <y>40</y>
      <width>761</width>
-     <height>581</height>
+     <height>551</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -64,6 +64,32 @@
       </property>
       <property name="textInteractionFlags">
        <set>Qt::TextInteractionFlag::NoTextInteraction</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>291</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Open your text file for operations:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="OpenTextFile">
+      <property name="text">
+       <string>Open text file</string>
       </property>
      </widget>
     </item>
