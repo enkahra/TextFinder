@@ -42,7 +42,7 @@ void TextFinder::on_FindButton_clicked()
         // Move to start and count all matches
         ui->textEdit->moveCursor(QTextCursor::Start);
         bool found;
-        while ((found = ui->textEdit->find(searchString, QTextDocument::FindWholeWords))) {
+        while ((found = ui->textEdit->find(searchString, QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively))) {
             searchTextCount++;
         }
 
@@ -54,7 +54,7 @@ void TextFinder::on_FindButton_clicked()
 
         // Move cursor back to top and select the first match
         ui->textEdit->moveCursor(QTextCursor::Start);
-        bool firstFound = ui->textEdit->find(searchString, QTextDocument::FindWholeWords);
+        bool firstFound = ui->textEdit->find(searchString, QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively);
         if (firstFound) {
             currentMatchIndex = 1;
             ui->matchInfoLabel->setText(QString("Match %1 of %2").arg(currentMatchIndex).arg(searchTextCount));
@@ -64,7 +64,7 @@ void TextFinder::on_FindButton_clicked()
     }
 
     // Same search term — find next match
-    bool found = ui->textEdit->find(searchString, QTextDocument::FindWholeWords);
+    bool found = ui->textEdit->find(searchString, QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively);
     if (found) {
         currentMatchIndex++;
         if (currentMatchIndex > searchTextCount)
@@ -73,7 +73,7 @@ void TextFinder::on_FindButton_clicked()
     } else {
         // Reached end — wrap to start
         ui->textEdit->moveCursor(QTextCursor::Start);
-        found = ui->textEdit->find(searchString, QTextDocument::FindWholeWords);
+        found = ui->textEdit->find(searchString, QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively);
         if (found) {
             currentMatchIndex = 1;
             ui->matchInfoLabel->setText(QString("Match %1 of %2").arg(currentMatchIndex).arg(searchTextCount));
